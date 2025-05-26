@@ -76,16 +76,22 @@ def analyse_frame(img):
 
     return cv2.cvtColor(img, cv2.COLOR_BGR2RGB), json.dumps(output_json, indent=2)
 
-
 def add_face(img, person_name):
     """Save a single face embedding under the given name."""
     if img is None or not person_name:
         return "Need both image and name!"
+
     rgb = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
-    res = DeepFace.analyze(rgb, actions=[], detector_backend="mtcnn")[0]
+
+    res = DeepFace.analyze(rgb, actions=[], detector_backend="mtcnn")
+    # nếu chỉ một mặt, DeepFace trả về dict; nếu nhiều mặt -> list
+    if isinstance(res, list):
+        res = res[0]
+
     x, y, w, h = [int(res["region"][k]) for k in ("x", "y", "w", "h")]
-    face_crop = rgb[y : y + h, x : x + w]
+    face_crop = rgb[y:y+h, x:x+w]
     emb = DeepFace.represent(face_crop, detector_backend="mtcnn")[0]["embedding"]
+
     face_db[person_name] = np.asarray(emb, dtype=np.float32)
     save_db(face_db)
     return f"Saved ‘{person_name}’ with {len(face_db)} total faces."
@@ -98,13 +104,13 @@ with gr.Blocks(title="DeepFace demo") as demo:
         "Upload a photo **or** switch to *webcam*."
     )
     with gr.Tab("Recognise"):
-        inp = gr.Image(source="webcam", type="numpy", streaming=True)
+        inp = gr.Image(sources=["upload", "webcam"], type="numpy", streaming=True)
         out_img = gr.Image()
         out_json = gr.Textbox(label="Results (JSON)")
-        inp.stream(analyse_frame, inp, outputs=[out_img, out_json])  # live
+        inp.stream(analyse_frame, inp, [out_img, out_json])
 
     with gr.Tab("Add new face"):
-        add_img = gr.Image(type="numpy", source="upload")
+        add_img = gr.Image(type="numpy", sources=["upload"])  # <— đổi here
         name_box = gr.Textbox(label="Person name")
         add_btn = gr.Button("Save to DB")
         info = gr.Textbox(label="Status")
