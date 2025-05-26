@@ -1,16 +1,19 @@
-tf-keras==0.1.0
+# Deep learning frameworks
+tensorflow>=2.16,<2.20                                     
+tf-keras==2.17.0                                          
+
+# Face detection backends
+retina-face==0.0.17
+mtcnn                                 
+
+# Face analysis & image processing
+deepface                                                   
+Pillow   
 numpy==1.26.4
 ml-dtypes==0.4.0
-tensorboard==2.17.0
-tensorflow==2.17.1      # hoặc tensorflow-intel==2.17.1
 
-deepface==0.0.83
-retinaface==0.0.13
 opencv-python==4.8.1.78
 pandas==1.5.3
-mtcnn==0.1.1
 gdown==4.7.1
 fire==0.5.0
-Pillow==9.5.0
-Flask==2.2.5
 gradio==4.27.0
