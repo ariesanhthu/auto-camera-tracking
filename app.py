@@ -32,7 +32,8 @@ def analyse_frame(img):
         return None, ""
     rgb = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
     results = DeepFace.analyze(
-        rgb, actions=["emotion"], detector_backend="mtcnn"
+        rgb, actions=["emotion"], detector_backend="mtcnn",
+        enforce_detection=True   
     )  # list of dicts
     if not isinstance(results, list):
         results = [results]
@@ -84,7 +85,7 @@ def add_face(img, person_name):
 
     rgb = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
 
-    res = DeepFace.analyze(rgb, actions=[], detector_backend="mtcnn")
+    res = DeepFace.analyze(rgb, actions=["emotion"], detector_backend="mtcnn", enforce_detection=True)
     # nếu chỉ một mặt, DeepFace trả về dict; nếu nhiều mặt -> list
     if isinstance(res, list):
         res = res[0]
