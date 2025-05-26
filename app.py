@@ -76,6 +76,7 @@ def analyse_frame(img):
 
     return cv2.cvtColor(img, cv2.COLOR_BGR2RGB), json.dumps(output_json, indent=2)
 
+
 def add_face(img, person_name):
     """Save a single face embedding under the given name."""
     if img is None or not person_name:
@@ -89,7 +90,7 @@ def add_face(img, person_name):
         res = res[0]
 
     x, y, w, h = [int(res["region"][k]) for k in ("x", "y", "w", "h")]
-    face_crop = rgb[y:y+h, x:x+w]
+    face_crop = rgb[y : y + h, x : x + w]
     emb = DeepFace.represent(face_crop, detector_backend="mtcnn")[0]["embedding"]
 
     face_db[person_name] = np.asarray(emb, dtype=np.float32)
@@ -104,7 +105,7 @@ with gr.Blocks(title="DeepFace demo") as demo:
         "Upload a photo **or** switch to *webcam*."
     )
     with gr.Tab("Recognise"):
-        inp = gr.Image(sources=["upload", "webcam"], type="numpy", streaming=True)
+        inp = gr.Image(sources=["webcam"], type="numpy", streaming=True)
         out_img = gr.Image()
         out_json = gr.Textbox(label="Results (JSON)")
         inp.stream(analyse_frame, inp, [out_img, out_json])
